@@ -23,26 +23,47 @@ public class HeroFSMAttack : HeroFSM
     int atkMode;
     bool reserve = false;
     bool isLoop = true;
+    bool move = false;
     float timer = 0f;
 
     public GameObject col;
 
+    Vector2 movement;
+
     public override void OnUpdate()
     {
-        base.OnUpdate();
+        base.OnFixedUpdate();
+        movement = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
 
-        Vector2 movement = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        if (Input.GetMouseButtonDown(1))
+        {
+            reserve = false;
+            isLoop = true;
+            move = false;
+            timer = 0f;
+            Manager.SetState(State.Evade);
+            EndCollider();
+        }
+    }
+
+    public override void OnFixedUpdate()
+    {
+        base.OnUpdate();
 
         if (atkMode == 0)
         {
             if(isLoop)
             {
                 timer += Time.deltaTime;
+                if (timer > 0.2f)
+                {
+                    move = false;
+                }
                 if (Input.GetMouseButtonDown(0))
                 {
                     reserve = true;
                 }
-                else if (reserve && timer > 0.5f)
+                else if (reserve && timer > 0.35f)
                 {
                     isLoop = false;
                     reserve = false;
@@ -68,6 +89,10 @@ public class HeroFSMAttack : HeroFSM
             if (isLoop)
             {
                 timer += Time.deltaTime;
+                if (timer > 0.25f)
+                {
+                    move = false;
+                }
                 if (Input.GetMouseButtonDown(0))
                 {
                     reserve = true;
@@ -97,6 +122,10 @@ public class HeroFSMAttack : HeroFSM
             if (isLoop)
             {
                 timer += Time.deltaTime;
+                if (timer > 0.5f)
+                {
+                    move = false;
+                }
                 if (timer > 1.0f)
                 {
                     isLoop = false;
@@ -112,13 +141,24 @@ public class HeroFSMAttack : HeroFSM
             }
         }
 
+        if(move)
+        {
+            Rigidbody rigidbody = GetComponent<Rigidbody>();
+            Vector3 velocity = transform.forward;
+            velocity = velocity * speed * Time.fixedDeltaTime;
+            rigidbody.MovePosition(rigidbody.position + velocity);
+        }
+
     }
+
+    public float speed;
 
     public void Atk1()
     {
         atkMode = 0;
         reserve = false;
         isLoop = true;
+        move = true;
         timer = 0f;
     }
 
@@ -127,6 +167,7 @@ public class HeroFSMAttack : HeroFSM
         atkMode = 1;
         reserve = false;
         isLoop = true;
+        move = true;
         timer = 0f;
     }
 
@@ -135,16 +176,17 @@ public class HeroFSMAttack : HeroFSM
         atkMode = 2;
         reserve = false;
         isLoop = true;
+        move = true;
         timer = 0f;
     }
 
     public void OnCollider()
     {
-        col.GetComponent<BoxCollider>().size = new Vector3(2f, 1f, 1f);
+        col.SetActive(true);
     }
     public void EndCollider()
     {
-        col.GetComponent<BoxCollider>().size = Vector3.zero;
+        col.SetActive(false);
     }
 
 }

@@ -20,6 +20,7 @@ public class HeroFSMIdle : HeroFSM
     {
         base.OnUpdate();
 
+
         Vector2 movement = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 
         if(Input.GetMouseButtonDown(0))
@@ -30,5 +31,11 @@ public class HeroFSMIdle : HeroFSM
         {
             Manager.SetState(State.Move);
         }
+    }
+
+    public override void OnFixedUpdate()
+    {
+        base.OnFixedUpdate();
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
     }
 }

@@ -6,7 +6,8 @@ public enum State
 {
     Idle = 0,
     Move,
-    Attack
+    Attack,
+    Evade
 }
 
 public class HeroManager : MonoBehaviour
@@ -36,6 +37,11 @@ public class HeroManager : MonoBehaviour
     private void Update()
     {
         stateDic[(int)currentState].OnUpdate();
+    }
+
+    private void FixedUpdate()
+    {
+        stateDic[(int)currentState].OnFixedUpdate();
     }
 
     public void SetState(State newState)

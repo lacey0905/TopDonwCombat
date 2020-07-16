@@ -19,11 +19,46 @@ public class HeroFSMMove : HeroFSM
     public float speed;
     public float rotSpeed;
 
+    Vector3 movement;
+    Quaternion newRot;
+
     public override void OnUpdate()
     {
         base.OnUpdate();
 
-        Vector2 movement = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        if (Input.GetMouseButtonDown(0))
+        {
+            Manager.SetState(State.Attack);
+        }
+        else if (Input.GetMouseButtonDown(1))
+        {
+            Manager.SetState(State.Evade);
+        }
+
+    }
+
+    public override void OnFixedUpdate()
+    {
+        base.OnFixedUpdate();
+
+        movement = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical"));
+        newRot = Quaternion.LookRotation(movement);
+
+        if (movement.x != 0f || movement.z != 0f)
+        {
+            Rigidbody rigidbody = GetComponent<Rigidbody>();
+
+            Vector3 velocity = movement * speed * Time.fixedDeltaTime;
+
+            //rigidbody.velocity = velocity;
+
+            rigidbody.MovePosition(rigidbody.position + velocity);
+            rigidbody.MoveRotation(Quaternion.Slerp(rigidbody.rotation, newRot, rotSpeed * Time.deltaTime));
+        }
+        else
+        {
+            Manager.SetState(State.Idle);
+        }
 
     }
 }

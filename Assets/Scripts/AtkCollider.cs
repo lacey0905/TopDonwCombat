@@ -11,10 +11,6 @@ public class AtkCollider : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
         Vector3 spawnDir = player.position - other.transform.position;
         Vector3 spawnPos = other.transform.position + spawnDir.normalized * 0.5f;
         spawnPos = new Vector3(spawnPos.x, other.transform.position.y, spawnPos.z);
@@ -22,8 +18,7 @@ public class AtkCollider : MonoBehaviour
         Instantiate(hitEft, spawnPos, Quaternion.identity);
 
         cam.Shake();
-        Debug.Log("End");
+        other.GetComponent<cap>().HitPush(player.forward);
+        other.GetComponent<cap>().Damage();
     }
-
-
 }
